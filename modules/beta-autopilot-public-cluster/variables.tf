@@ -114,6 +114,21 @@ variable "insecure_kubelet_readonly_port_enabled" {
   default     = null
 }
 
+variable "node_pools_cgroup_mode" {
+  type        = string
+  description = "Specifies the Linux cgroup mode for autopilot Kubernetes nodes in the cluster. Accepted values are `CGROUP_MODE_UNSPECIFIED`, `CGROUP_MODE_V1`, and `CGROUP_MODE_V2`, which determine the control group hierarchy used for resource management."
+  validation {
+    condition = var.node_pools_cgroup_mode == null || contains([
+      "",
+      "CGROUP_MODE_UNSPECIFIED",
+      "CGROUP_MODE_V1",
+      "CGROUP_MODE_V2"
+    ], var.node_pools_cgroup_mode != null ? var.node_pools_cgroup_mode : "")
+    error_message = "The node_pools_cgroup_mode must be one of CGROUP_MODE_UNSPECIFIED, CGROUP_MODE_V1, or CGROUP_MODE_V2."
+  }
+  default = null
+}
+
 variable "maintenance_start_time" {
   type        = string
   description = "Time window specified for daily or recurring maintenance operations in RFC3339 format"
@@ -570,4 +585,10 @@ variable "monitoring_metric_writer_role" {
     condition     = can(regex("^(roles/[a-zA-Z0-9_.]+|projects/[a-zA-Z0-9-]+/roles/[a-zA-Z0-9_.]+)$", var.monitoring_metric_writer_role))
     error_message = "The monitoring_metric_writer_role must be either a predefined role (roles/*) or a custom role (projects/*/roles/*)."
   }
+}
+
+variable "enterprise_config" {
+  description = "(Optional) Enable or disable GKE enterprise. Valid values are DEFAULT and ENTERPRISE."
+  type        = string
+  default     = null
 }
